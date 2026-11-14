@@ -1,0 +1,100 @@
+.layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+}
+
+.center {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 8rem 5rem 3.5rem;
+  background: linear-gradient(to top, rgba(5, 6, 9, 0.95) 0%, rgba(5, 6, 9, 0.85) 55%, rgba(5, 6, 9, 0) 100%);
+  transition: opacity 0.2s ease;
+}
+
+.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 8rem;
+  height: 5rem;
+}
+
+.titles {
+  margin-left: 1.75rem;
+  min-width: 0;
+}
+
+.name {
+  font-size: 2.4rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.num {
+  margin-right: 1rem;
+  font-family: var(--font-mono);
+  color: var(--primary-soft);
+}
+
+.meta {
+  color: var(--muted);
+}
+
+.epg {
+  max-width: 70rem;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  margin-top: 1.5rem;
+  color: var(--destructive);
+  font-weight: 600;
+}
+
+.errorIcon {
+  font-size: 1.8rem;
+  margin-right: 0.75rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.actions > * + * {
+  margin-left: 1rem;
+}
+
+.hint {
+  margin-left: auto !important;
+  color: var(--dim);
+  font-size: 1.15rem;
+}

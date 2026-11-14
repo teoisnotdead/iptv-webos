@@ -1,0 +1,64 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 4rem;
+  padding: 0 2rem;
+  border-radius: 999px;
+  font-size: 1.375rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: transform 0.12s ease, background-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.icon {
+  font-size: 1.6rem;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.button > .icon:only-child {
+  margin-right: 0;
+}
+
+.button:focus {
+  transform: scale(1.06);
+  box-shadow: var(--focus-ring);
+}
+
+.button:disabled {
+  opacity: 0.45;
+}
+
+.primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.primary:focus {
+  background: var(--primary-hover);
+}
+
+.secondary {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+
+.secondary:focus {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.ghost {
+  color: var(--soft);
+}
+
+.ghost:focus {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+
+.selected {
+  background: var(--primary-a25);
+  color: var(--foreground);
+}

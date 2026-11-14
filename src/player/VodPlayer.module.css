@@ -1,0 +1,271 @@
+/* Encima del video a pantalla completa (z 16); el fondo es transparente para que se vea el video. */
+.layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+}
+
+.center {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.center .spinner {
+  width: 5rem;
+  height: 5rem;
+  border-width: 0.45rem;
+}
+
+.bigIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 9rem;
+  height: 9rem;
+  border-radius: 50%;
+  background: rgba(5, 6, 9, 0.6);
+  font-size: 3.6rem;
+}
+
+.errorBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 56rem;
+  padding: 3rem 4rem;
+  border-radius: 1.5rem;
+  background: rgba(15, 17, 21, 0.94);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.errorBox strong {
+  font-size: 1.7rem;
+}
+
+.errorBox span {
+  margin-top: 0.6rem;
+  color: var(--muted);
+}
+
+.errorIcon {
+  font-size: 3.4rem;
+  margin-bottom: 1rem;
+  color: var(--destructive);
+}
+
+.errorActions {
+  display: flex;
+  margin-top: 2rem;
+}
+
+.errorActions > * + * {
+  margin-left: 1.25rem;
+}
+
+/* ---- controles ---- */
+
+.top,
+.bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  transition: opacity 0.2s ease;
+}
+
+.top {
+  top: 0;
+  padding: 3.5rem 5rem 8rem;
+  background: linear-gradient(180deg, rgba(5, 6, 9, 0.85) 0%, rgba(5, 6, 9, 0) 100%);
+}
+
+.bottom {
+  bottom: 0;
+  padding: 9rem 5rem 3.5rem;
+  background: linear-gradient(0deg, rgba(5, 6, 9, 0.95) 0%, rgba(5, 6, 9, 0.8) 50%, rgba(5, 6, 9, 0) 100%);
+}
+
+.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sub {
+  margin-top: 0.4rem;
+  font-size: 1.4rem;
+  color: var(--soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timeline {
+  display: flex;
+  align-items: center;
+}
+
+.time {
+  flex-shrink: 0;
+  width: 8.5rem;
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  color: var(--soft);
+}
+
+.time:last-child {
+  text-align: right;
+}
+
+.slider {
+  flex: 1;
+  height: 3rem;
+  margin: 0 1.5rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+}
+
+.track {
+  position: relative;
+  display: block;
+  height: 0.5rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.22);
+  transition: height 0.12s ease;
+}
+
+.fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  border-radius: 1rem;
+  background: var(--primary);
+}
+
+.knob {
+  position: absolute;
+  top: 50%;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin: -0.7rem 0 0 -0.7rem;
+  border-radius: 50%;
+  background: var(--foreground);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.slider:focus .track {
+  height: 0.75rem;
+}
+
+.slider:focus .knob {
+  opacity: 1;
+  box-shadow: 0 0 0 0.3rem var(--primary-a50);
+}
+
+.seekLabel {
+  position: absolute;
+  bottom: 1.6rem;
+  margin-left: -4rem;
+  width: 8rem;
+  padding: 0.3rem 0;
+  border-radius: 0.6rem;
+  background: var(--foreground);
+  color: var(--background);
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.actions > * + * {
+  margin-left: 1.25rem;
+}
+
+.hint {
+  margin-left: auto !important;
+  color: var(--dim);
+  font-size: 1.15rem;
+}
+
+/* ---- siguiente episodio ---- */
+
+.upNext {
+  position: absolute;
+  right: 5rem;
+  bottom: 18rem;
+  width: 40rem;
+  padding: 2rem 2.4rem;
+  border-radius: 1.4rem;
+  background: rgba(15, 17, 21, 0.95);
+  border: 1px solid var(--border);
+  box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.6);
+}
+
+.upNextLabel {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary-soft);
+}
+
+.upNextTitle {
+  display: block;
+  margin-top: 0.6rem;
+  font-size: 1.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upNextActions {
+  margin-top: 1.6rem;
+}
+
+.upNextButtons {
+  display: flex;
+}
+
+.upNextButtons > * + * {
+  margin-left: 1rem;
+}
+
+/* ---- selector de subtítulos ---- */
+
+.pickList {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.pickList > * + * {
+  margin-top: 0.75rem;
+}
+
+.pickItem {
+  justify-content: flex-start;
+}

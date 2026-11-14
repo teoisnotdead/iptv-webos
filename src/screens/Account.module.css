@@ -1,0 +1,61 @@
+.page {
+  height: 100%;
+  padding: 5rem 6rem;
+}
+
+.title {
+  margin: 0 0 3rem;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 4.5rem;
+  line-height: 1;
+}
+
+.rows {
+  width: 56rem;
+  margin: 0 0 3rem;
+  border-radius: 1.25rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  min-height: 5rem;
+  padding: 0 2rem;
+  border-top: 1px solid var(--line);
+}
+
+.row:first-child {
+  border-top: 0;
+}
+
+.row dt {
+  width: 14rem;
+  color: var(--muted);
+}
+
+.row dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.spinner {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-width: 0.2rem;
+}
+
+.actions {
+  display: flex;
+}
+
+.actions > * + * {
+  margin-left: 1.25rem;
+}
+
+.note {
+  margin: 1.5rem 0 0;
+  color: var(--success);
+}

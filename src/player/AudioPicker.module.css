@@ -1,0 +1,10 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.track {
+  justify-content: flex-start;
+  margin-bottom: 0.9rem;
+}

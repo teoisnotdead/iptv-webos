@@ -1,0 +1,45 @@
+.scrim {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 6, 9, 0.78);
+}
+
+.panel {
+  width: 44rem;
+  padding: 3rem;
+  border-radius: 1.5rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 2rem 6rem rgba(0, 0, 0, 0.6);
+}
+
+.title {
+  margin: 0 0 1rem;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 3rem;
+  line-height: 1.1;
+}
+
+.body {
+  color: var(--soft);
+  margin-bottom: 2.5rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+/* Sin `gap` en Chromium 53: margen entre botones. */
+.actions > * + * {
+  margin-left: 1.25rem;
+}

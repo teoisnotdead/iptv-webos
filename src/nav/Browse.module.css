@@ -1,0 +1,68 @@
+/* Las medidas en rem coinciden con las constantes de Browse.tsx. */
+
+.view {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.track {
+  position: relative;
+  transition: transform 0.28s ease;
+  will-change: transform;
+}
+
+.header {
+  position: relative;
+}
+
+.row {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.title {
+  display: flex;
+  align-items: baseline;
+  height: 3.4rem;
+  margin: 0;
+  padding: 0.6rem 0 0 4rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.count {
+  margin-left: 1rem;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--dim);
+}
+
+.noTitle {
+  height: 0.5rem;
+}
+
+/* Recorta lo que queda fuera (a la izquierda, bajo el margen) sin cortar el foco de la primera tarjeta. */
+.strip {
+  position: relative;
+  overflow: hidden;
+}
+
+.cards {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.22s ease;
+  will-change: transform;
+}
+
+.cards > * {
+  position: absolute;
+}

@@ -1,0 +1,57 @@
+.box {
+  margin-top: 1.5rem;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
+.tag {
+  flex-shrink: 0;
+  width: 7rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary-soft);
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+.time {
+  flex-shrink: 0;
+  margin-left: 1rem;
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  color: var(--muted);
+}
+
+.track {
+  height: 0.35rem;
+  margin: 0.75rem 0 1rem 7rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: var(--primary);
+}
+
+.next .tag {
+  color: var(--dim);
+}
+
+.next .title {
+  font-weight: 400;
+  color: var(--soft);
+}

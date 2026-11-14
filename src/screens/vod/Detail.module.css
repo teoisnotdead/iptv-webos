@@ -1,0 +1,244 @@
+/* Fichas de película y serie: capas que tapan toda la pantalla (sobre la barra lateral, z 15). */
+
+.layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 18;
+  overflow: hidden;
+  background: var(--background);
+}
+
+.glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(70rem 40rem at 80% 25%, var(--primary-a16), transparent 70%), radial-gradient(50rem 30rem at 5% 100%, var(--primary-a08), transparent 70%);
+}
+
+.backdrop {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 72%;
+  height: 78%;
+  object-fit: cover;
+  object-position: center 20%;
+}
+
+.shadeSide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 78%;
+  background: linear-gradient(90deg, var(--background) 28%, rgba(15, 17, 21, 0.85) 46%, rgba(15, 17, 21, 0.3) 72%, rgba(15, 17, 21, 0.05) 100%);
+}
+
+.shadeBottom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 78%;
+  background: linear-gradient(0deg, var(--background) 0%, rgba(15, 17, 21, 0) 45%);
+}
+
+.poster {
+  position: absolute;
+  top: 7rem;
+  right: 10rem;
+  width: 22rem;
+  height: 33rem;
+  overflow: hidden;
+  border-radius: 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 3rem 6rem -1rem rgba(0, 0, 0, 0.9);
+  background: var(--secondary);
+}
+
+.poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---- película ---- */
+
+.content {
+  position: absolute;
+  top: 7rem;
+  left: 8rem;
+  width: 74rem;
+}
+
+.eyebrow {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary-soft);
+}
+
+.title {
+  margin: 1rem 0 0;
+  max-width: 70rem;
+  font-size: 4.6rem;
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  margin-top: 1.4rem;
+  color: var(--soft);
+  font-size: 1.35rem;
+  white-space: nowrap;
+}
+
+.meta > * + *::before {
+  content: "·";
+  margin: 0 0.75rem;
+  color: var(--dim);
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  color: var(--foreground);
+}
+
+.star {
+  margin-right: 0.4rem;
+  color: var(--warning);
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  margin-top: 1.6rem;
+  font-size: 1.2rem;
+  color: var(--muted);
+}
+
+.progressBar {
+  position: relative;
+  width: 22rem;
+  height: 0.45rem;
+  margin-right: 1.2rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.progressFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: var(--primary);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  margin-top: 2.2rem;
+}
+
+.actions > * + * {
+  margin-left: 1.25rem;
+}
+
+.plot {
+  margin: 2.6rem 0 0;
+  max-width: 64rem;
+  font-size: 1.4rem;
+  line-height: 1.55;
+  color: var(--soft);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+}
+
+.spinner {
+  margin-top: 2.6rem;
+}
+
+.credits {
+  margin: 2rem 0 0;
+  max-width: 64rem;
+  font-size: 1.2rem;
+}
+
+.credit {
+  display: flex;
+  margin-top: 0.6rem;
+}
+
+.credit dt {
+  flex-shrink: 0;
+  width: 8.5rem;
+  color: var(--dim);
+}
+
+.credit dd {
+  margin: 0;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* ---- serie ---- */
+
+/* Las filas de Browse empiezan a 4 rem: con este margen quedan alineadas con el título (8 rem). */
+.seriesBody {
+  position: absolute;
+  top: 0;
+  left: 4rem;
+  right: 0;
+  bottom: 0;
+}
+
+.seriesHead {
+  position: absolute;
+  top: 5rem;
+  left: 4rem;
+  width: 74rem;
+}
+
+.plotShort {
+  margin: 1.4rem 0 0;
+  max-width: 62rem;
+  font-size: 1.35rem;
+  line-height: 1.5;
+  color: var(--soft);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.inlineSpinner {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.note {
+  color: var(--muted);
+  font-size: 1.2rem;
+}

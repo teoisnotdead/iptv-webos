@@ -1,0 +1,21 @@
+.shell {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Sin z-index: así los avisos sobre el video (z-index 11) quedan en el mismo contexto que el video. */
+.main {
+  position: absolute;
+  top: 0;
+  left: 7rem;
+  right: 0;
+  bottom: 0;
+}
+
+/* Tapado por una capa de encima: no se dibuja ni se puede enfocar, pero conserva su estado. */
+.covered {
+  display: none;
+}

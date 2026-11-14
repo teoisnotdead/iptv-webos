@@ -1,0 +1,24 @@
+/*
+ * Capas: interfaz (0) < video en la vista previa (10) < sus avisos encima (11) < barra lateral (15)
+ * < fondo negro y video a pantalla completa (16) < capa de la pantalla completa (20) < diálogos (40).
+ */
+
+.video {
+  position: absolute;
+  z-index: 10;
+  object-fit: contain;
+}
+
+.full {
+  z-index: 16;
+}
+
+.backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 16;
+  background: #000;
+}

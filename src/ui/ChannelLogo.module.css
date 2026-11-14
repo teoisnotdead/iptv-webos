@@ -1,0 +1,25 @@
+.logo {
+  display: -webkit-flex;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 5.5rem;
+  height: 3.5rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.img {
+  max-width: 88%;
+  max-height: 82%;
+  object-fit: contain;
+}
+
+.initials {
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.85);
+}

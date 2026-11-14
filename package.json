@@ -1,0 +1,30 @@
+{
+  "name": "iptv-webos",
+  "private": true,
+  "version": "0.1.0",
+  "description": "App para Smart TV LG (webOS) de un servicio IPTV compatible con Xtream Codes",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build && node scripts/appinfo.mjs && node scripts/check-compat.mjs",
+    "preview": "vite preview --host 127.0.0.1 --port 4173",
+    "package": "npm run build && node scripts/tv.mjs package",
+    "tv:install": "node scripts/tv.mjs install",
+    "tv:launch": "node scripts/tv.mjs launch",
+    "tv:inspect": "node scripts/tv.mjs inspect",
+    "fake-panel": "node scripts/fake-panel.mjs"
+  },
+  "dependencies": {
+    "core-js": "^3.51.0",
+    "preact": "^10.29.8"
+  },
+  "devDependencies": {
+    "@webos-tools/cli": "^3.2.6",
+    "es-check": "^9.9.0",
+    "hls.js": "^1.7.4",
+    "playwright-core": "^1.65.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.8"
+  }
+}

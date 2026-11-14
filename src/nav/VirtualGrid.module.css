@@ -1,0 +1,15 @@
+.view {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.track {
+  position: relative;
+  transition: transform 0.25s ease;
+  will-change: transform;
+}
+
+.track > * {
+  position: absolute;
+}

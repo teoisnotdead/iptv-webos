@@ -1,0 +1,91 @@
+.page {
+  position: relative;
+  height: 100%;
+}
+
+.fill {
+  height: 100%;
+}
+
+/* Las filas siguen montadas (recuerdan dónde estabas) pero no se ven ni se pueden enfocar. */
+.gone {
+  display: none;
+}
+
+.gridPage {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.gridTitle {
+  display: flex;
+  align-items: baseline;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 3.5rem 4rem 1.5rem;
+  font-family: var(--font-serif);
+  font-size: 3.6rem;
+  font-weight: 400;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gridCount {
+  margin-left: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  color: var(--dim);
+}
+
+.grid {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ---- selector de categorías ---- */
+
+.pickerList {
+  height: 46rem;
+  margin: 0 -1rem;
+}
+
+.pickRow {
+  padding: 0.25rem 0;
+}
+
+.pickInner {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 1.25rem;
+  border-radius: 0.9rem;
+  color: var(--soft);
+}
+
+.pickName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pickCount {
+  flex-shrink: 0;
+  margin-left: 1rem;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--dim);
+}
+
+.pickRow:focus .pickInner {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.pickRow:focus .pickCount {
+  color: var(--secondary);
+}

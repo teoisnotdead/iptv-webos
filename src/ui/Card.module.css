@@ -1,0 +1,254 @@
+/*
+ * Tarjetas para el control remoto. Las medidas de cada forma coinciden con CARD_WIDTH / CARD_HEIGHT
+ * de Card.tsx: las filas ubican las tarjetas con esos números.
+ */
+
+.card {
+  display: block;
+  flex-shrink: 0;
+}
+
+.frame {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: var(--secondary);
+  border: 1px solid var(--line);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.card:focus .frame {
+  transform: scale(1.07);
+  border-color: transparent;
+  box-shadow: 0 0 0 0.3rem var(--primary), 0 1.2rem 3rem rgba(0, 0, 0, 0.65);
+}
+
+.img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder {
+  position: absolute;
+  left: 1.25rem;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+  word-wrap: break-word;
+}
+
+.name {
+  display: block;
+  height: 1.9rem;
+  margin-top: 0.9rem;
+  padding: 0 0.2rem;
+  font-size: 1.3rem;
+  line-height: 1.9rem;
+  color: var(--soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sub {
+  display: block;
+  height: 1.6rem;
+  padding: 0 0.2rem;
+  font-size: 1.1rem;
+  line-height: 1.6rem;
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card:focus .name {
+  color: var(--foreground);
+  font-weight: 600;
+}
+
+.card:focus .sub {
+  color: var(--muted);
+}
+
+/* ---- formas ---- */
+
+.poster {
+  width: 14rem;
+}
+
+.poster .frame {
+  height: 21rem;
+}
+
+.wide {
+  width: 24rem;
+}
+
+.wide .frame {
+  height: 13.5rem;
+}
+
+.logo {
+  width: 16rem;
+}
+
+.logo .frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 9rem;
+  background: #1b1f28;
+}
+
+.logo .name {
+  margin-top: 0.8rem;
+  text-align: center;
+}
+
+.logoImg {
+  max-width: 80%;
+  max-height: 72%;
+  object-fit: contain;
+}
+
+.initials {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.chip {
+  width: 14rem;
+}
+
+.chip .frame {
+  height: 4.5rem;
+  border-radius: 999px;
+  padding: 0 1.5rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 4.5rem;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--soft);
+}
+
+.chip:focus .frame {
+  transform: scale(1.05);
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.chip.active .frame {
+  background: var(--primary-a25);
+  color: var(--foreground);
+  border-color: var(--primary-a50);
+}
+
+.chip.active:focus .frame {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+/* ---- "Ver todas" ---- */
+
+.more {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: var(--soft);
+}
+
+.moreIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--primary-soft);
+}
+
+.moreText {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.moreCount {
+  margin-top: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--dim);
+}
+
+.card:focus .more {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+
+/* ---- insignias ---- */
+
+.rating {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.5rem;
+  background: rgba(15, 17, 21, 0.82);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+
+.ratingIcon {
+  margin-right: 0.35rem;
+  color: var(--warning);
+}
+
+.watched {
+  position: absolute;
+  top: 0.7rem;
+  left: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 1.3rem;
+}
+
+.bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0.45rem;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.barFill {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+}

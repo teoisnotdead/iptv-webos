@@ -1,0 +1,5 @@
+# Finales de línea LF en el repositorio y en la copia de trabajo (también en Windows).
+* text=auto eol=lf
+*.ttf binary
+*.png binary
+*.ipk binary

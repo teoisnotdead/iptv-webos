@@ -1,0 +1,63 @@
+.page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 30% 20%, var(--primary-a16) 0%, rgba(15, 17, 21, 0) 55%), var(--background);
+}
+
+.panel {
+  width: 46rem;
+  padding: 4rem;
+  border-radius: 2rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 2rem 6rem rgba(0, 0, 0, 0.5);
+}
+
+.brand {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 4.5rem;
+  line-height: 1.05;
+}
+
+.lead {
+  margin: 0.75rem 0 2.5rem;
+  color: var(--muted);
+}
+
+.notice {
+  margin: -1rem 0 2rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  background: rgba(240, 180, 90, 0.12);
+  color: var(--warning);
+}
+
+.error {
+  margin: -0.5rem 0 1.5rem;
+  color: var(--destructive);
+  font-weight: 500;
+}
+
+.submit {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.submit:focus {
+  transform: scale(1.03);
+}
+
+.help {
+  margin: 1.5rem 0 0;
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--dim);
+}

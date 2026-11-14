@@ -1,0 +1,167 @@
+/*
+ * Estilos globales: tokens de diseño (misma base oscura que la web y la app Android), fuentes y reset.
+ * Todo lo demás vive en el CSS Module de cada componente.
+ *
+ * Compatibilidad: el TV (webOS 4.x) usa Chromium 53. Nada de CSS Grid, `gap` en flex, `position: sticky`,
+ * `aspect-ratio`, `color-mix`, `oklch`, `inset`, `:focus-visible`, `:focus-within` ni `min()/max()/clamp()`.
+ * scripts/check-compat.mjs lo revisa en cada build.
+ */
+
+@font-face {
+  font-family: "Geist";
+  font-weight: 400;
+  src: url("../assets/fonts/geist_regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Geist";
+  font-weight: 500;
+  src: url("../assets/fonts/geist_medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Geist";
+  font-weight: 600;
+  src: url("../assets/fonts/geist_semibold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Geist";
+  font-weight: 700;
+  src: url("../assets/fonts/geist_bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Geist Mono";
+  font-weight: 400;
+  src: url("../assets/fonts/geist_mono_regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Geist Mono";
+  font-weight: 500;
+  src: url("../assets/fonts/geist_mono_medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Instrument Serif";
+  font-weight: 400;
+  src: url("../assets/fonts/instrument_serif_regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Instrument Serif";
+  font-weight: 400;
+  font-style: italic;
+  src: url("../assets/fonts/instrument_serif_italic.ttf") format("truetype");
+}
+
+:root {
+  --radius: 0.75rem;
+
+  /* superficies */
+  --background: #0f1115;
+  --sidebar: #0c0e12;
+  --card: #161920;
+  --secondary: #1d212b;
+  --accent: #1a1d25;
+
+  /* texto */
+  --foreground: #e6e8ee;
+  --soft: #a3aaba;
+  --muted: #8b93a7;
+  --dim: #6b7386;
+
+  /* marca: los valores reales los pone brand.ts desde VITE_BRAND_COLOR */
+  --primary: #a78bfa;
+  --primary-foreground: #120e1f;
+  --primary-hover: #c2aefc;
+  --primary-soft: #c2aefc;
+  --primary-a08: rgba(167, 139, 250, 0.08);
+  --primary-a12: rgba(167, 139, 250, 0.12);
+  --primary-a16: rgba(167, 139, 250, 0.16);
+  --primary-a20: rgba(167, 139, 250, 0.2);
+  --primary-a25: rgba(167, 139, 250, 0.25);
+  --primary-a33: rgba(167, 139, 250, 0.33);
+  --primary-a40: rgba(167, 139, 250, 0.4);
+  --primary-a50: rgba(167, 139, 250, 0.5);
+  --primary-a67: rgba(167, 139, 250, 0.67);
+  --primary-a80: rgba(167, 139, 250, 0.8);
+
+  /* líneas */
+  --border: #262b37;
+  --line: #20242e;
+
+  /* estados */
+  --destructive: #f08282;
+  --success: #78d296;
+  --warning: #f0b45a;
+  --info: #96d4ff;
+
+  --font-sans: "Geist", "LG Smart UI", sans-serif;
+  --font-mono: "Geist Mono", monospace;
+  --font-serif: "Instrument Serif", serif;
+
+  /* anillo de foco: se ve a 3 metros */
+  --focus-ring: 0 0 0 0.25rem var(--primary), 0 0.5rem 2rem rgba(0, 0, 0, 0.5);
+}
+
+/* 1 rem = 16 px a 1920 de ancho; si el TV le da a la app 1280×720, todo escala igual. */
+html {
+  font-size: 0.8333vw;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--background);
+}
+
+body {
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 1.375rem;
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+input {
+  font: inherit;
+  color: inherit;
+}
+
+:focus {
+  outline: none;
+}
+
+img {
+  display: block;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
