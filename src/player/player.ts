@@ -8,6 +8,8 @@
  */
 import { createStore } from "../lib/store";
 import { audioLanguage, subtitleLanguage } from "../data/prefs";
+import { langKey } from "./tracks";
+import { hasLuna, lunaShowText, watchSourceInfo, type LunaText } from "./webosMedia";
 
 export const HLS_TYPE = "application/vnd.apple.mpegurl";
 
@@ -64,6 +66,24 @@ let stallReloads = 0;
 let onSourceOk: ((s: Source) => void) | null = null;
 let onEndedCb: (() => void) | null = null;
 let destroyHls: (() => void) | null = null;
+/**
+ * Subtítulos incrustados según el reproductor del TV (webOS), para cuando `textTracks` viene vacío
+ * (ver `webosMedia.ts`). `showing` es la pista activa, o -1.
+ */
+let luna: { mediaId: string; texts: LunaText[]; showing: number } | null = null;
+let cancelLuna: (() => void) | null = null;
+/** Las preferencias de audio y subtítulos se aplican una sola vez por carga (no en cada `playing`). */
+let audioPrefsDone = false;
+let textPrefsDone = false;
+
+/** Audio por defecto si el usuario nunca eligió uno: la app está en español. */
+const DEFAULT_AUDIO = "es";
+
+function resetLuna() {
+  if (cancelLuna) cancelLuna();
+  cancelLuna = null;
+  luna = null;
+}
 
 function clearTimers() {
   clearTimeout(startTimer);
@@ -72,6 +92,7 @@ function clearTimers() {
 }
 
 function detach() {
+  resetLuna();
   if (destroyHls) {
     destroyHls();
     destroyHls = null;
@@ -95,7 +116,7 @@ function readTracks(): AudioTrackInfo[] {
   return out;
 }
 
-function readTexts(): TextTrackInfo[] {
+function readDomTexts(): TextTrackInfo[] {
   const list = video?.textTracks;
   if (!list) return [];
   const out: TextTrackInfo[] = [];
@@ -106,25 +127,58 @@ function readTexts(): TextTrackInfo[] {
   return out;
 }
 
+/** Los subtítulos del reproductor del TV se usan solo si el navegador no expone ninguno. */
+function lunaInUse(): boolean {
+  return !!luna && readDomTexts().length === 0;
+}
+
+function readTexts(): TextTrackInfo[] {
+  const dom = readDomTexts();
+  if (dom.length || !luna) return dom;
+  const l = luna;
+  return l.texts.map((t) => ({ index: t.index, label: "", language: t.language, showing: t.index === l.showing }));
+}
+
 function syncTracks() {
   patch({ tracks: readTracks(), texts: readTexts() });
 }
 
-/** Al cargar un video, activa las pistas del idioma que el usuario eligió antes (si existen). */
-function applyPreferredTracks() {
-  const lang = audioLanguage();
+/** Audio del idioma que el usuario eligió antes (o español, si nunca eligió), si el video lo trae. */
+function applyPreferredAudio() {
+  const lang = langKey(audioLanguage() || DEFAULT_AUDIO);
   const list = video?.audioTracks;
-  if (lang && list && list.length > 1) {
-    let match = -1;
-    for (let i = 0; i < list.length; i++) if (list[i].language === lang) match = i;
-    if (match >= 0 && !list[match].enabled) selectAudio(match);
+  if (!list || list.length < 2) return;
+  let match = -1;
+  for (let i = 0; i < list.length; i++) if (langKey(list[i].language) === lang) match = i;
+  if (match >= 0 && !list[match].enabled) selectAudio(match);
+}
+
+/**
+ * Subtítulos como los dejó el usuario: un idioma, "on" (una pista sin idioma: la primera sin idioma),
+ * "off" o nada. Con el reproductor del TV se manda siempre el estado (apagados si no hay que mostrar),
+ * para no depender de lo que el TV haga por defecto. Devuelve false si todavía no hay pistas.
+ */
+function applyPreferredText(): boolean {
+  const texts = readTexts();
+  if (!texts.length) return false;
+  const pref = subtitleLanguage();
+  let pick: TextTrackInfo | undefined;
+  if (pref === "on") pick = texts.find((t) => !t.language) || texts[0];
+  else if (pref && pref !== "off") pick = texts.find((t) => langKey(t.language) === langKey(pref));
+  if (pick) {
+    if (!pick.showing) selectText(pick.index);
+  } else if (lunaInUse()) selectText(-1);
+  return true;
+}
+
+/** Aplica lo que falte de las preferencias de pistas; se llama al reproducir y cuando aparecen pistas. */
+function applyPrefs() {
+  if (playerState.get().status !== "playing") return;
+  if (!audioPrefsDone) {
+    audioPrefsDone = true;
+    applyPreferredAudio();
   }
-  const sub = subtitleLanguage();
-  if (sub && sub !== "off") {
-    const texts = readTexts();
-    const t = texts.find((x) => x.language === sub);
-    if (t && !t.showing) selectText(t.index);
-  }
+  if (!textPrefsDone) textPrefsDone = applyPreferredText();
 }
 
 export function selectAudio(index: number): void {
@@ -134,8 +188,14 @@ export function selectAudio(index: number): void {
   syncTracks();
 }
 
-/** Muestra una pista de subtítulos (índice de `textTracks`), o ninguna con -1. */
+/** Muestra una pista de subtítulos (el `index` de `texts`), o ninguna con -1. */
 export function selectText(index: number): void {
+  if (luna && lunaInUse()) {
+    luna.showing = index;
+    lunaShowText(luna.mediaId, index);
+    syncTracks();
+    return;
+  }
   const list = video?.textTracks;
   if (!list) return;
   for (let i = 0; i < list.length; i++) list[i].mode = i === index ? "showing" : "disabled";
@@ -144,8 +204,10 @@ export function selectText(index: number): void {
 
 async function load(s: Source, my: number) {
   if (!video) return;
+  const staleId = video.mediaId || "";
   detach();
   pendingStart = startAt;
+  audioPrefsDone = textPrefsDone = false;
   // En Chrome de escritorio (solo al desarrollar) HLS no es nativo: se usa hls.js. Nunca entra al build del TV.
   if (import.meta.env.DEV && s.engine === "hls" && !video.canPlayType(HLS_TYPE)) {
     const { default: Hls } = await import("hls.js");
@@ -169,6 +231,16 @@ async function load(s: Source, my: number) {
     video.load();
   } else {
     video.src = s.url;
+  }
+  // Películas y episodios en el TV: los subtítulos del archivo solo los conoce el reproductor del TV.
+  if (!live && hasLuna()) {
+    cancelLuna = watchSourceInfo(video, staleId, (mediaId, texts) => {
+      cancelLuna = null;
+      if (my !== attempt || !texts.length) return;
+      luna = { mediaId, texts, showing: -1 };
+      syncTracks();
+      applyPrefs();
+    });
   }
   const p = video.play();
   if (p && typeof p.catch === "function") p.catch(() => undefined);
@@ -280,8 +352,16 @@ export function attachVideo(el: HTMLVideoElement): () => void {
     const s = sources[current];
     if (s && onSourceOk) onSourceOk(s);
     patch({ status: "playing", buffering: false, error: null });
-    applyPreferredTracks();
+    applyPrefs();
     syncTracks();
+  };
+  const onTextAdded = () => {
+    syncTracks();
+    applyPrefs();
+  };
+  /** Después de adelantar, el TV puede apagar los subtítulos: se vuelven a pedir (como hace Lampa). */
+  const onSeeked = () => {
+    if (luna && luna.showing >= 0 && lunaInUse()) lunaShowText(luna.mediaId, luna.showing);
   };
   const onPause = () => {
     if (playerState.get().status === "playing") patch({ status: "paused", buffering: false });
@@ -345,6 +425,7 @@ export function attachVideo(el: HTMLVideoElement): () => void {
   el.addEventListener("canplay", onCanPlay);
   el.addEventListener("error", onError);
   el.addEventListener("ended", onEnded);
+  el.addEventListener("seeked", onSeeked);
   const tracks = el.audioTracks;
   if (tracks) {
     tracks.addEventListener("addtrack", syncTracks);
@@ -353,7 +434,7 @@ export function attachVideo(el: HTMLVideoElement): () => void {
   }
   const texts = el.textTracks;
   if (texts) {
-    texts.addEventListener("addtrack", syncTracks);
+    texts.addEventListener("addtrack", onTextAdded);
     texts.addEventListener("removetrack", syncTracks);
   }
   return () => {
@@ -367,13 +448,14 @@ export function attachVideo(el: HTMLVideoElement): () => void {
     el.removeEventListener("canplay", onCanPlay);
     el.removeEventListener("error", onError);
     el.removeEventListener("ended", onEnded);
+    el.removeEventListener("seeked", onSeeked);
     if (tracks) {
       tracks.removeEventListener("addtrack", syncTracks);
       tracks.removeEventListener("removetrack", syncTracks);
       tracks.removeEventListener("change", syncTracks);
     }
     if (texts) {
-      texts.removeEventListener("addtrack", syncTracks);
+      texts.removeEventListener("addtrack", onTextAdded);
       texts.removeEventListener("removetrack", syncTracks);
     }
     stop();

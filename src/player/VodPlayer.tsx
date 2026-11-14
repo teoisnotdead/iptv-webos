@@ -409,7 +409,8 @@ function SubtitlePicker({ onClose }: { onClose: () => void }) {
             class={styles.pickItem}
             onClick={() => {
               selectText(t.index);
-              if (t.language) setSubtitleLanguage(t.language);
+              // Sin idioma (pasa con los del TV) se recuerda solo que los quiere activados.
+              setSubtitleLanguage(t.language || "on");
               onClose();
             }}
           >

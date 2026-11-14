@@ -15,6 +15,14 @@ interface ImportMeta {
 interface Window {
   webOS?: { platformBack?: () => void };
   PalmSystem?: { platformBack?: () => void };
+  /** Llamadas a servicios luna:// del TV (p. ej. `com.webos.media`). */
+  PalmServiceBridge?: new () => PalmServiceBridge;
+}
+
+interface PalmServiceBridge {
+  onservicecallback: ((msg: string) => void) | null;
+  call(uri: string, params: string): void;
+  cancel(): void;
 }
 
 /** Pistas de audio del `<video>`: el TV las tiene (webOS ≥ 3.0); Chrome de escritorio no. */
@@ -33,6 +41,8 @@ interface MediaAudioTrackList extends EventTarget {
 
 interface HTMLMediaElement {
   readonly audioTracks?: MediaAudioTrackList;
+  /** webOS: id del reproductor interno ("<invalid mediaId>" mientras no hay uno). Cambia en cada carga. */
+  readonly mediaId?: string;
   /** Chrome: bytes de audio decodificados (0 = no se pudo decodificar la pista). */
   readonly webkitAudioDecodedByteCount?: number;
 }

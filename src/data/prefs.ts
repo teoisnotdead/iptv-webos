@@ -26,7 +26,10 @@ export function setAudioLanguage(lang: string): void {
 
 const SUBS_KEY = "iptv:subtitulos";
 
-/** Subtítulos que eligió la última vez: idioma, "off" (desactivados) o "" (nunca eligió). */
+/**
+ * Subtítulos que eligió la última vez: idioma, "on" (eligió una pista sin idioma), "off" (desactivados)
+ * o "" (nunca eligió).
+ */
 export function subtitleLanguage(): string {
   return readJson<string>(SUBS_KEY, "");
 }
