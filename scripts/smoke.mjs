@@ -227,10 +227,15 @@ await key("Enter");
 await wait(400);
 await check("agregar el canal a favoritos", /Favorito/.test(await focused()), await focused());
 
-await key("ArrowUp");
+await key("PageUp"); // CH+
 await wait(4000);
 v = await video();
-await check("zapping hacia arriba pasa al canal 5", /Noticias 5/.test(await text()) && !!v && v.t > 0.5, JSON.stringify(v));
+await check("CH+ pasa al canal 5", /Noticias 5/.test(await text()) && !!v && v.t > 0.5, JSON.stringify(v));
+
+await wait(5500); // se oculta la barra
+await key("ArrowDown");
+await wait(400);
+await check("↓ muestra las opciones sin cambiar de canal", /Noticias 5/.test(await text()) && /HLS|TS|Favorito|favoritos/.test(await focused()), await focused());
 
 await key("Escape"); // oculta la barra
 await wait(300);

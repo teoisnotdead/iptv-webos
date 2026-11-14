@@ -29,9 +29,10 @@ type Props = {
 };
 
 /**
- * Canal a pantalla completa. ▲/CH+ y ▼/CH− cambian de canal dentro de la carpeta; OK o las flechas
- * laterales muestran la barra con la guía y las opciones (HLS/TS, audio); Atrás la oculta y, sin
- * barra, vuelve a la lista.
+ * Canal a pantalla completa. CH+ y CH− cambian de canal dentro de la carpeta; OK o cualquier flecha
+ * muestran la barra con la guía y las opciones (HLS/TS, favorito, audio); Atrás la oculta y, sin
+ * barra, vuelve a la lista. (Las flechas no cambian de canal: así lo pidió el usuario, para que
+ * ↑/↓ abran las opciones.)
  */
 export function LiveFullscreen(p: Props) {
   const ref = useRef<HTMLDivElement>(null);
@@ -81,10 +82,10 @@ export function LiveFullscreen(p: Props) {
     if (e.defaultPrevented) return;
     const k = navKey(e);
     if (!k) return;
-    if (k === "up" || k === "chup") {
+    if (k === "chup") {
       e.preventDefault();
       p.onZap(1);
-    } else if (k === "down" || k === "chdown") {
+    } else if (k === "chdown") {
       e.preventDefault();
       p.onZap(-1);
     } else if (k === "stop") {
@@ -94,7 +95,7 @@ export function LiveFullscreen(p: Props) {
       e.preventDefault();
       if (bar) hideBar();
       else showBar();
-    } else if (k === "ok" || k === "left" || k === "right") {
+    } else if (k === "ok" || k === "left" || k === "right" || k === "up" || k === "down") {
       const focusInside = ref.current && ref.current.contains(document.activeElement);
       if (!visible || !focusInside) {
         e.preventDefault();
@@ -158,7 +159,7 @@ export function LiveFullscreen(p: Props) {
           <Button icon={p.favorite ? "star" : "starOutline"} selected={p.favorite} onClick={p.onToggleFavorite}>
             {p.favorite ? "Favorito" : "Agregar a favoritos"}
           </Button>
-          <span class={styles.hint}>Arriba/abajo o CH+/CH− cambian de canal · Atrás vuelve</span>
+          <span class={styles.hint}>CH+/CH− cambian de canal · Atrás vuelve</span>
         </div>
       </div>
 
