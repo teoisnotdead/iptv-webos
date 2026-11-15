@@ -75,8 +75,13 @@ export function forgetCatalog(): Promise<void> {
   return c ? idbDeletePrefix(`${accountKey(c)}|`) : Promise.resolve();
 }
 
-// Al cambiar o cerrar la cuenta, la memoria no sirve.
-session.subscribe(() => mem.clear());
+// Al cambiar o cerrar la cuenta, la memoria no sirve (renombrarla no la cambia).
+let memAccount = session.get() ? accountKey(session.get()!) : "";
+session.subscribe((c) => {
+  const k = c ? accountKey(c) : "";
+  if (k !== memAccount) mem.clear();
+  memAccount = k;
+});
 
 export const loadLiveCategories = () => stored<Category>("live-cats", async (c) => mapList(await apiList(c, "get_live_categories"), toCategory));
 export const loadChannels = () => stored<Channel>("live", async (c) => mapList(await apiList(c, "get_live_streams"), toChannel));

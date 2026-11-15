@@ -13,7 +13,7 @@ import { Account } from "./screens/Account";
 import { Home } from "./screens/home/Home";
 import { Live } from "./screens/live/Live";
 import { Login } from "./screens/Login";
-import { overlays, section, type Overlay } from "./screens/router";
+import { addingAccount, overlays, section, type Overlay } from "./screens/router";
 import { Soon } from "./screens/Soon";
 import { Catalog } from "./screens/vod/Catalog";
 import { MovieDetail } from "./screens/vod/MovieDetail";
@@ -35,12 +35,16 @@ function exitApp() {
 
 export function App() {
   const creds = useStore(session);
+  const adding = useStore(addingAccount);
   const [exit, setExit] = useState(false);
+  const key = creds ? accountKey(creds) : "";
 
-  // Al abrir la app, confirmar que la cuenta guardada siga activa.
+  // Al abrir la app, y al pasar a otra cuenta, confirmar que la cuenta siga activa.
   useEffect(() => {
     verifySession();
-  }, []);
+    // Sin cuenta en uso no hay "agregar otra": es el login normal.
+    if (!key) addingAccount.set(false);
+  }, [key]);
 
   // Atrás sin nadie que lo tome: desde el contenido va a la barra lateral; desde ahí (o en el login), salir.
   useEffect(() => {
@@ -54,7 +58,11 @@ export function App() {
 
   return (
     <>
-      {creds ? <Shell key={accountKey(creds)} /> : <Login />}
+      {creds && !adding ? (
+        <Shell key={key} />
+      ) : (
+        <Login key={adding ? "agregar" : "login"} onClose={creds && adding ? () => addingAccount.set(false) : undefined} />
+      )}
       <VideoHost />
       {exit && (
         <Dialog

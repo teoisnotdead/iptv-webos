@@ -26,25 +26,16 @@
   white-space: nowrap;
 }
 
+/* El símbolo ocupa el mismo lugar que los íconos del menú, para que quede alineado con ellos cerrado. */
 .mark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 1.1rem;
-  background: var(--primary);
-  color: var(--primary-foreground);
-  font-family: var(--font-serif);
-  font-size: 2.6rem;
-  line-height: 1;
+  width: 4.2rem;
+  height: 4.2rem;
+  margin-left: -0.15rem;
 }
 
 .brandName {
-  margin-left: 1.25rem;
-  font-family: var(--font-serif);
-  font-size: 2.4rem;
+  margin-left: 1rem;
+  font-size: 2.6rem;
   opacity: 0;
   transition: opacity 0.18s ease;
 }

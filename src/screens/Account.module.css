@@ -11,8 +11,25 @@
   line-height: 1;
 }
 
+/* Dos columnas: la cuenta en uso a la izquierda y las cuentas del TV a la derecha. */
+.columns {
+  display: flex;
+  align-items: flex-start;
+}
+
+.main {
+  flex-shrink: 0;
+  width: 52rem;
+}
+
+.side {
+  flex: 1;
+  min-width: 0;
+  max-width: 46rem;
+  margin-left: 4rem;
+}
+
 .rows {
-  width: 56rem;
   margin: 0 0 3rem;
   border-radius: 1.25rem;
   background: var(--card);
@@ -58,4 +75,145 @@
 .note {
   margin: 1.5rem 0 0;
   color: var(--success);
+}
+
+.heading {
+  margin: 0 0 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.list {
+  padding: 0.75rem;
+  border-radius: 1.25rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+.account {
+  display: flex;
+  align-items: center;
+}
+
+.account + .account,
+.add {
+  margin-top: 0.5rem;
+}
+
+.pick {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  background: var(--secondary);
+  color: var(--muted);
+  font-size: 1.7rem;
+}
+
+.current .avatar {
+  background: var(--primary-a16);
+  color: var(--primary);
+}
+
+.who {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  margin-left: 1.25rem;
+}
+
+.label,
+.detail {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.label {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.detail {
+  margin-top: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--dim);
+}
+
+.inUse {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.inUse svg,
+.rename svg {
+  margin-right: 0.5rem;
+}
+
+.rename {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: 4.6rem;
+  margin-left: 0.5rem;
+  padding: 0 1.25rem;
+  border-radius: 1rem;
+  font-size: 1.2rem;
+  color: var(--muted);
+}
+
+.add {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1.2rem 1.25rem;
+  border-radius: 1rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.add svg {
+  margin-right: 1rem;
+  font-size: 1.7rem;
+}
+
+/* Foco a la vista desde el sillón: claro sobre oscuro, como en la barra lateral. */
+.pick:focus,
+.rename:focus,
+.add:focus {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.pick:focus .detail,
+.pick:focus .inUse {
+  color: var(--background);
+}
+
+.hint {
+  margin: 0 0 1.5rem;
 }

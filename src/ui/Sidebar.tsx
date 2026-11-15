@@ -1,7 +1,7 @@
 import { useState } from "preact/hooks";
-import { BRAND_NAME } from "../config";
 import { cx } from "../lib/cx";
 import type { Section } from "../screens/router";
+import { BrandMark, Wordmark } from "./Brand";
 import { Icon, type IconName } from "./Icon";
 import styles from "./Sidebar.module.css";
 
@@ -31,8 +31,8 @@ export function Sidebar({ section, onSelect }: { section: Section; onSelect: (s:
       }}
     >
       <div class={styles.brand}>
-        <span class={styles.mark}>{BRAND_NAME.slice(0, 1).toUpperCase()}</span>
-        <span class={styles.brandName}>{BRAND_NAME}</span>
+        <BrandMark class={styles.mark} />
+        <Wordmark class={styles.brandName} />
       </div>
       <div class={styles.items}>
         {ITEMS.map((it) => (

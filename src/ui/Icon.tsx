@@ -81,6 +81,8 @@ const PATHS = {
   ),
   restart: <path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v5h5" />,
   chevron: <path d="M9 5l7 7-7 7" />,
+  plus: <path d="M12 5v14M5 12h14" />,
+  edit: <path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-4-4L4 16v4zM14 6l4 4" />,
 } as const;
 
 export type IconName = keyof typeof PATHS;

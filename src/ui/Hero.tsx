@@ -7,7 +7,8 @@ import styles from "./Hero.module.css";
 type Props = {
   /** Texto chico sobre el título ("DESTACADO · PELÍCULA"). */
   eyebrow: string;
-  title: string;
+  /** Texto, o la firma de la marca en la portada de bienvenida. */
+  title: ComponentChildren;
   meta?: Array<string | undefined>;
   rating?: string | null;
   plot?: string;

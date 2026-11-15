@@ -32,14 +32,25 @@ let saved = loadSaved();
 /** Cuenta en uso, o null si hay que iniciar sesión. */
 export const session = createStore<Creds | null>(activeOf(saved));
 
+/** Todas las cuentas guardadas en este TV, en el orden en que se agregaron. */
+export const accounts = createStore<Creds[]>(saved.accounts);
+
+/** Cómo se muestra una cuenta: el nombre que le puso el usuario o, si no tiene, su usuario del panel. */
+export function accountLabel(c: Creds): string {
+  return (c.name && c.name.trim()) || c.username;
+}
+
 /** Aviso para mostrar en el login después de cerrar la sesión por un motivo (cuenta vencida…). */
 export const loginNotice = createStore<string | null>(null);
 
 function persist(next: Saved) {
   saved = next;
   writeJson(KEY, next);
+  accounts.set(next.accounts);
   session.set(activeOf(next));
 }
+
+const indexOf = (c: Creds) => saved.accounts.findIndex((a) => accountKey(a) === accountKey(c));
 
 export type LoginErrorCode = "bad_request" | "bad_url" | "invalid" | "expired" | "disabled" | "inactive" | "unreachable";
 
@@ -75,8 +86,11 @@ async function fetchAccount(c: Creds): Promise<AccountInfo> {
   }
 }
 
-/** Valida la cuenta contra el panel y la deja como activa. Lanza `LoginError`. */
-export async function login(input: { url: string; username: string; password: string }): Promise<void> {
+/**
+ * Valida la cuenta contra el panel y la deja en uso. Lanza `LoginError`. Una cuenta que ya estaba
+ * guardada conserva su lugar en la lista y, si no se escribe un nombre, el que tenía.
+ */
+export async function login(input: { url: string; username: string; password: string; name?: string }): Promise<void> {
   const url = PANEL_LOCKED ? PANEL_URL : normalizePanelUrl(input.url);
   const username = input.username.trim();
   const password = input.password.trim();
@@ -87,18 +101,46 @@ export async function login(input: { url: string; username: string; password: st
   const problem = accountProblem(await fetchAccount(creds));
   if (problem) throw problem;
 
-  const accounts = saved.accounts.filter((a) => accountKey(a) !== accountKey(creds));
-  accounts.unshift(creds);
+  const i = indexOf(creds);
+  const name = (input.name || "").trim().slice(0, 40) || (i >= 0 ? saved.accounts[i].name : "");
+  if (name) creds.name = name;
+  const list = saved.accounts.slice();
+  if (i >= 0) list[i] = creds;
+  else list.push(creds);
   loginNotice.set(null);
-  persist({ accounts, active: 0 });
+  persist({ accounts: list, active: i >= 0 ? i : list.length - 1 });
 }
 
-/** Cierra la sesión y olvida la cuenta en uso. */
+/** Pasa a otra de las cuentas guardadas. */
+export function switchTo(c: Creds): void {
+  const i = indexOf(c);
+  if (i < 0 || i === saved.active) return;
+  loginNotice.set(null);
+  persist({ accounts: saved.accounts, active: i });
+}
+
+/** Cambia el nombre de una cuenta; vacío lo quita (se muestra su usuario). Solo se guarda en este TV. */
+export function rename(c: Creds, name: string): void {
+  const i = indexOf(c);
+  if (i < 0) return;
+  const n = name.trim().slice(0, 40);
+  const a = saved.accounts[i];
+  const next: Creds = { url: a.url, username: a.username, password: a.password };
+  if (n) next.name = n;
+  const list = saved.accounts.slice();
+  list[i] = next;
+  persist({ accounts: list, active: saved.active });
+}
+
+/**
+ * Cierra la sesión de la cuenta en uso y la quita del TV. Si quedan otras, pasa a la primera; si no,
+ * vuelve al login (con `notice`, si se cerró por un motivo).
+ */
 export function logout(notice: string | null = null): void {
   const current = session.get();
-  const accounts = current ? saved.accounts.filter((a) => accountKey(a) !== accountKey(current)) : saved.accounts;
+  const list = current ? saved.accounts.filter((a) => accountKey(a) !== accountKey(current)) : saved.accounts;
   loginNotice.set(notice);
-  persist({ accounts, active: -1 });
+  persist({ accounts: list, active: list.length > 0 ? 0 : -1 });
 }
 
 /**

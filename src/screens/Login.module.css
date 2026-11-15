@@ -20,11 +20,18 @@
 }
 
 .brand {
+  display: flex;
+  align-items: center;
   margin: 0;
-  font-family: var(--font-serif);
-  font-weight: 400;
-  font-size: 4.5rem;
-  line-height: 1.05;
+  font-size: 4.2rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.mark {
+  width: 5.2rem;
+  height: 5.2rem;
+  margin-right: 1.2rem;
 }
 
 .lead {
@@ -53,6 +60,11 @@
 
 .submit:focus {
   transform: scale(1.03);
+}
+
+.cancel {
+  width: 100%;
+  margin-top: 1rem;
 }
 
 .help {

@@ -1,0 +1,40 @@
+.mark {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* La firma: Geist Semibold con tracking -0.045em, como en Lytra. El tamaño lo pone quien la usa. */
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  color: var(--foreground);
+}
+
+.big {
+  font-size: 1.4em;
+}
+
+.word {
+  letter-spacing: -0.045em;
+}
+
+.word svg {
+  display: inline-block;
+  width: 0.52em;
+  height: 1em;
+  vertical-align: -0.2em;
+  overflow: visible;
+}
+
+.tag {
+  margin-left: 0.32em;
+  font-size: 0.5em;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--primary);
+}

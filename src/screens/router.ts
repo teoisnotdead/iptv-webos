@@ -7,6 +7,7 @@
 import type { Movie, Show } from "../data/models";
 import type { ProgressMeta } from "../data/progress";
 import { session } from "../data/session";
+import { accountKey } from "../data/xtream";
 import { createStore } from "../lib/store";
 
 export type Section = "home" | "search" | "live" | "movies" | "series" | "account";
@@ -41,8 +42,15 @@ export function watchChannel(id: number): void {
   section.set("live");
 }
 
-// Otra cuenta (o cerrar sesión): se parte de cero.
-session.subscribe(() => {
+/** "Agregar cuenta" abierto (el login, encima de la cuenta en uso). */
+export const addingAccount = createStore(false);
+
+// Otra cuenta (o cerrar sesión): se parte de cero. Renombrar la cuenta en uso no cuenta como otra.
+let current = session.get() ? accountKey(session.get()!) : "";
+session.subscribe((c) => {
+  const k = c ? accountKey(c) : "";
+  if (k === current) return;
+  current = k;
   overlays.set([]);
   section.set("home");
   liveIntent.set(null);

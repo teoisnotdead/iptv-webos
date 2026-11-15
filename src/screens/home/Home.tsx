@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "preact/hooks";
-import { BRAND_NAME } from "../../config";
 import { loadChannels, loadMovies, loadShows, loadSeriesInfo, loadVodInfo } from "../../data/catalog";
 import { useFavorites, useRecentChannels } from "../../data/library";
 import type { Channel, Movie, Show } from "../../data/models";
@@ -9,6 +8,7 @@ import { movieDetails, seriesDetails } from "../../lib/mappers";
 import { useAsync } from "../../lib/useAsync";
 import { Browse, type BrowseRow } from "../../nav/Browse";
 import { useFocusWhenReady } from "../../nav/layer";
+import { Wordmark } from "../../ui/Brand";
 import { Button } from "../../ui/Button";
 import { Hero } from "../../ui/Hero";
 import { Message } from "../../ui/Status";
@@ -152,7 +152,7 @@ function HomeHero({ featured, info }: { featured: { movie: Movie | null; show: S
     );
   }
   return (
-    <Hero eyebrow="Bienvenido" title={BRAND_NAME} plot="Tus canales en vivo, películas y series, en la pantalla grande.">
+    <Hero eyebrow="Bienvenido" title={<Wordmark big />} plot="Tus canales en vivo, películas y series, en la pantalla grande.">
       <Button variant="primary" icon="live" autofocus onClick={() => section.set("live")}>
         Ver TV en vivo
       </Button>

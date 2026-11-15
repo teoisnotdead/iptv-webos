@@ -1,7 +1,7 @@
 /**
  * Después de `vite build`: escribe dist/appinfo.json (el manifiesto de la app para webOS) y los
  * íconos, con los datos de .env.local. Si existen brand/icon.png (80×80) y brand/largeIcon.png
- * (130×130), se usan esos; si no, se dibuja uno con el color de marca.
+ * (130×130), se usan esos; si no, se dibuja el de Lytra TV con el color de marca.
  */
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { deflateSync } from "node:zlib";
@@ -20,8 +20,10 @@ if (!/^\d+\.\d+\.\d+$/.test(version)) {
   console.error(`APP_VERSION inválida: "${version}" (debe ser x.y.z, solo números).`);
   process.exit(1);
 }
-const name = (env.VITE_BRAND_NAME || "").trim() || "IPTV";
+const name = (env.VITE_BRAND_NAME || "").trim() || "Lytra TV";
 const color = /^#[0-9a-f]{6}$/i.test((env.VITE_BRAND_COLOR || "").trim()) ? env.VITE_BRAND_COLOR.trim() : "#a78bfa";
+
+const CUSTOM_ICONS = existsSync("brand/icon.png") || existsSync("brand/largeIcon.png");
 
 const appinfo = {
   id,
@@ -32,7 +34,9 @@ const appinfo = {
   title: name,
   icon: "icon.png",
   largeIcon: "largeIcon.png",
-  iconColor: color,
+  // Fondo del ícono en el launcher: el tono medio del degradado de Lytra.
+  // Con íconos propios del revendedor, su color de marca.
+  iconColor: CUSTOM_ICONS ? color : "#1c1f28",
   resolution: "1920x1080",
   // La app maneja la tecla Atrás (pregunta antes de salir) en vez del historial del navegador.
   disableBackHistoryAPI: true,
@@ -82,40 +86,73 @@ function png(size, pixel) {
   return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk("IHDR", ihdr), chunk("IDAT", deflateSync(raw)), chunk("IEND", Buffer.alloc(0))]);
 }
 
-/** Cuadrado redondeado con el color de marca y un triángulo de "play" (con suavizado 4×4). */
+/**
+ * Ícono por defecto: el símbolo de Lytra TV (el mismo de `src/ui/Brand.tsx`) en el color de marca,
+ * sobre el degradado nocturno de Lytra. Va a sangre completa, sin esquinas ni borde: el launcher del
+ * TV ya lo pone en su propia tarjeta, y un cuadro propio se veía como un marco dentro de otro (probado
+ * en el TV, 2026-11-15). Se dibuja en una grilla de 64 unidades, con el símbolo en las 48 del centro
+ * (en su grilla de 24) y suavizado 5×5.
+ */
 function drawIcon(size) {
-  const n = parseInt(color.slice(1), 16);
-  const bg = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-  const lum = (0.2126 * bg[0] + 0.7152 * bg[1] + 0.0722 * bg[2]) / 255;
-  const fg = lum > 0.6 ? [18, 14, 31] : [255, 255, 255];
-  const r = size * 0.22;
-  const inRounded = (x, y) => {
-    const cx = Math.min(Math.max(x, r), size - r);
-    const cy = Math.min(Math.max(y, r), size - r);
+  const hex = (h) => {
+    const n = parseInt(h.slice(1), 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  };
+  const brand = hex(color);
+  const top = hex("#232733"), bottom = hex("#15171d");
+  const mix = (a, b, t) => [0, 1, 2].map((k) => a[k] * (1 - t) + b[k] * t);
+
+  const inRect = (x, y, rx, ry, w, h, r) => {
+    if (x < rx || y < ry || x > rx + w || y > ry + h) return false;
+    const cx = Math.min(Math.max(x, rx + r), rx + w - r);
+    const cy = Math.min(Math.max(y, ry + r), ry + h - r);
     return (x - cx) ** 2 + (y - cy) ** 2 <= r * r;
   };
-  // Triángulo apuntando a la derecha, algo corrido para que se vea centrado.
-  const ax = size * 0.38, ay = size * 0.28, bx = size * 0.38, by = size * 0.72, cx = size * 0.74, cy = size * 0.5;
-  const side = (px, py, x1, y1, x2, y2) => (x2 - x1) * (py - y1) - (y2 - y1) * (px - x1);
-  const inTri = (x, y) => {
-    const d1 = side(x, y, ax, ay, bx, by), d2 = side(x, y, bx, by, cx, cy), d3 = side(x, y, cx, cy, ax, ay);
-    return !((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0));
+
+  // Cartas de 9 × 12.6, de atrás hacia adelante. Cada una pierde lo que tapa la siguiente agrandada 1.5.
+  const CARDS = [
+    { x: 3, y: 2, o: 0.4, cut: [5.5, 4.2] },
+    { x: 7, y: 5.7, o: 0.7, cut: [9.5, 7.9] },
+    { x: 11, y: 9.4, o: 1, cut: null },
+  ];
+
+  // El play calado: el triángulo más 0.55 alrededor (el trazo redondo de 1.1 del SVG).
+  const T = [[14.55, 13.55], [14.55, 17.85], [18.05, 15.7]];
+  const side = (px, py, a, b) => (b[0] - a[0]) * (py - a[1]) - (b[1] - a[1]) * (px - a[0]);
+  const segDist = (px, py, a, b) => {
+    const dx = b[0] - a[0], dy = b[1] - a[1];
+    const t = Math.max(0, Math.min(1, ((px - a[0]) * dx + (py - a[1]) * dy) / (dx * dx + dy * dy)));
+    return Math.hypot(px - a[0] - t * dx, py - a[1] - t * dy);
   };
-  const S = 4;
+  const inPlay = (x, y) => {
+    const d1 = side(x, y, T[0], T[1]), d2 = side(x, y, T[1], T[2]), d3 = side(x, y, T[2], T[0]);
+    if (!((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0))) return true;
+    return Math.min(segDist(x, y, T[0], T[1]), segDist(x, y, T[1], T[2]), segDist(x, y, T[2], T[0])) <= 0.55;
+  };
+
+  // Degradado del cuadro: de (0.33, 0.03) a (0.67, 0.97) del ancho y el alto.
+  const g0 = [21.12, 1.92], gd = [21.76, 60.16], gl = gd[0] * gd[0] + gd[1] * gd[1];
+
+  const S = 5;
   return png(size, (x, y) => {
-    let cover = 0, tri = 0;
+    let n = 0;
+    const sum = [0, 0, 0];
     for (let i = 0; i < S; i++)
       for (let j = 0; j < S; j++) {
-        const px = x + (i + 0.5) / S, py = y + (j + 0.5) / S;
-        if (inRounded(px, py)) {
-          cover++;
-          if (inTri(px, py)) tri++;
+        const u = ((x + (i + 0.5) / S) * 64) / size, v = ((y + (j + 0.5) / S) * 64) / size;
+        n++;
+        const t = Math.max(0, Math.min(1, ((u - g0[0]) * gd[0] + (v - g0[1]) * gd[1]) / gl));
+        let c = mix(top, bottom, t);
+        const mx = ((u - 8) * 24) / 48, my = ((v - 8) * 24) / 48;
+        for (const k of CARDS) {
+          if (!inRect(mx, my, k.x, k.y, 9, 12.6, 1.7)) continue;
+          if (k.cut ? inRect(mx, my, k.cut[0], k.cut[1], 12, 15.6, 3) : inPlay(mx, my)) continue;
+          c = mix(c, brand, k.o);
         }
+        for (let k = 0; k < 3; k++) sum[k] += c[k];
       }
-    if (!cover) return [0, 0, 0, 0];
-    const t = tri / cover;
-    const mix = (k) => Math.round(bg[k] * (1 - t) + fg[k] * t);
-    return [mix(0), mix(1), mix(2), Math.round((cover / (S * S)) * 255)];
+    if (!n) return [0, 0, 0, 0];
+    return [Math.round(sum[0] / n), Math.round(sum[1] / n), Math.round(sum[2] / n), Math.round((n / (S * S)) * 255)];
   });
 }
 
