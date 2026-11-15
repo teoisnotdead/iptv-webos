@@ -33,7 +33,8 @@ const ROW_GAP = 1.2;
 const LEFT = 4;
 /** Aire arriba de la fila con foco cuando la página sube. */
 const TOP_PAD = 2;
-const OVERSCAN = 2;
+/** Tarjetas de más a cada lado de lo visible. Cada una es un póster más que decodificar al aparecer la fila. */
+const OVERSCAN = 1;
 
 const stripHeight = (r: BrowseRow) => CARD_HEIGHT[r.shape] + 2 * STRIP_PAD;
 export const rowHeight = (r: BrowseRow) => (r.title ? TITLE_H : NO_TITLE_H) + stripHeight(r) + ROW_GAP;

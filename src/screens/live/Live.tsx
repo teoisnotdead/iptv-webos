@@ -7,6 +7,7 @@ import { session } from "../../data/session";
 import { streamUrl } from "../../data/xtream";
 import { byId, groupByCategory } from "../../lib/collections";
 import { cx } from "../../lib/cx";
+import { formatCount } from "../../lib/format";
 import { focusZone } from "../../nav/spatial";
 import { VirtualList, type Jump } from "../../nav/VirtualList";
 import { HLS_TYPE, play, playerFrame, playerState, retry, stop, type Source } from "../../player/player";
@@ -37,8 +38,6 @@ type LiveData = {
   byId: Map<number, Channel>;
   catNames: Map<string, string>;
 };
-
-const formatCount = (n: number) => n.toLocaleString("es-CL");
 
 function sourcesFor(ch: Channel, first: LiveEngine): Source[] {
   const c = session.get();

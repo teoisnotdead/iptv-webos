@@ -1,6 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import { cx } from "../lib/cx";
-import { hueOf, initials, placeholderBackground } from "../lib/format";
+import { formatCount, hueOf, initials, placeholderBackground } from "../lib/format";
 import { sized, type ImageSize } from "../lib/images";
 import { Icon } from "./Icon";
 import styles from "./Card.module.css";
@@ -15,7 +15,11 @@ export const CARD_WIDTH: Record<CardShape, number> = { poster: 14, logo: 16, wid
 /** Alto total de la tarjeta (marco + textos). */
 export const CARD_HEIGHT: Record<CardShape, number> = { poster: 25.4, logo: 12, wide: 18.2, chip: 4.5 };
 
-const IMAGE_SIZE: Record<CardShape, ImageSize> = { poster: "w342", logo: "w185", wide: "w342", chip: "w185" };
+/**
+ * Los pósters se dibujan a 14 rem (224 px): w185 casi no se nota y se decodifica unas 3 veces más
+ * rápido que w342. Decodificar pósters era lo que más frenaba las filas en el TV.
+ */
+const IMAGE_SIZE: Record<CardShape, ImageSize> = { poster: "w185", logo: "w185", wide: "w342", chip: "w185" };
 
 export type CardModel = {
   key: string;
@@ -61,7 +65,7 @@ export function Card({ card, shape, row, col, isDefault, style, onFocus }: Props
       <span class={styles.more}>
         <Icon name="chevron" class={styles.moreIcon} />
         <span class={styles.moreText}>Ver todas</span>
-        <span class={styles.moreCount}>{card.more!.toLocaleString("es-CL")}</span>
+        <span class={styles.moreCount}>{formatCount(card.more!)}</span>
       </span>
     );
   else if (src) art = <img class={shape === "logo" ? styles.logoImg : styles.img} src={src} alt="" onError={() => setFailed(true)} />;

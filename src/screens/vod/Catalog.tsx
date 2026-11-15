@@ -5,6 +5,7 @@ import type { Category, Movie, Show } from "../../data/models";
 import { getProgress, progressMap, useProgress } from "../../data/progress";
 import { byId, groupByCategory, newest } from "../../lib/collections";
 import { cx } from "../../lib/cx";
+import { formatCount as fmt } from "../../lib/format";
 import { movieDetails, seriesDetails } from "../../lib/mappers";
 import { useAsync } from "../../lib/useAsync";
 import { useBack } from "../../nav/back";
@@ -31,8 +32,6 @@ const NO_CAT = "";
 
 type CatItem = { id: string; name: string; count: number };
 type Data = { cats: CatItem[]; items: Item[]; byCat: Map<string, Item[]> };
-
-const fmt = (n: number) => n.toLocaleString("es-CL");
 
 /**
  * Películas o Series, estilo Netflix: portada destacada, "Recientes", "Mi lista" y una fila por
@@ -121,12 +120,15 @@ export function Catalog({ kind }: { kind: VodKind }) {
     [featured],
   );
 
+  // Fijo por catálogo: las filas se rearman cada vez que se guarda el avance de un video.
+  const fixed = useMemo(() => (data ? { recent: newest(data.items, ROW_MAX), byId: byId(data.items) } : null), [data]);
+
   const rows = useMemo(() => {
-    if (!data) return [];
+    if (!data || !fixed) return [];
     const out: BrowseRow[] = [];
-    out.push({ key: "new", title: "Recientes", shape: "poster", cards: newest(data.items, ROW_MAX).map(card) });
+    out.push({ key: "new", title: "Recientes", shape: "poster", cards: fixed.recent.map(card) });
     if (favs.length) {
-      const m = byId(data.items);
+      const m = fixed.byId;
       const mine = favs.map((id) => m.get(id)).filter((x): x is Item => !!x);
       if (mine.length) out.push({ key: "mine", title: "Mi lista", shape: "poster", cards: mine.map(card) });
     }
@@ -137,7 +139,7 @@ export function Catalog({ kind }: { kind: VodKind }) {
       out.push({ key: `cat-${c.id}`, title: c.name, count: fmt(c.count), shape: "poster", cards });
     }
     return out;
-  }, [data, favs, progress]);
+  }, [data, fixed, favs, progress]);
 
   const gridCards = useMemo(() => (grid && data ? (data.byCat.get(grid.id) || []).map(card) : []), [grid, data, progress]);
 

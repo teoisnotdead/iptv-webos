@@ -69,8 +69,23 @@ export function Home() {
     [featured],
   );
 
+  // Las listas fijas se calculan una vez por catálogo: las filas se rearman cada vez que se guarda el
+  // avance de un video (cada 10 s mientras se ve algo), y recorrer miles de títulos ahí se nota.
+  const lists = useMemo(
+    () =>
+      data
+        ? {
+            newMovies: newest(data.movies, ROW_MAX),
+            newShows: newest(data.shows, ROW_MAX),
+            topMovies: topRated(data.movies, ROW_MAX),
+            topShows: topRated(data.shows, ROW_MAX),
+          }
+        : null,
+    [data],
+  );
+
   const rows = useMemo(() => {
-    if (!data || !maps) return [];
+    if (!data || !maps || !lists) return [];
     const out: BrowseRow[] = [];
     const pick = <T,>(ids: number[], m: Map<number, T>) => ids.map((id) => m.get(id)).filter((x): x is T => !!x);
 
@@ -79,19 +94,18 @@ export function Home() {
     if (fav.length) out.push({ key: "fav-live", title: "Canales favoritos", shape: "logo", cards: fav.map(channelCard) });
     const recent = pick(recentLive, maps.channels);
     if (recent.length) out.push({ key: "recent-live", title: "Vistos recientemente", shape: "logo", cards: recent.map(channelCard) });
-    if (data.movies.length)
-      out.push({ key: "new-movies", title: "Películas recientes", shape: "poster", cards: newest(data.movies, ROW_MAX).map((m) => movieCard(m, progress)) });
-    if (data.shows.length) out.push({ key: "new-series", title: "Series recientes", shape: "poster", cards: newest(data.shows, ROW_MAX).map(showCard) });
+    if (lists.newMovies.length)
+      out.push({ key: "new-movies", title: "Películas recientes", shape: "poster", cards: lists.newMovies.map((m) => movieCard(m, progress)) });
+    if (lists.newShows.length) out.push({ key: "new-series", title: "Series recientes", shape: "poster", cards: lists.newShows.map(showCard) });
     const mine = pick(favMovies, maps.movies)
       .map((m) => movieCard(m, progress))
       .concat(pick(favSeries, maps.shows).map(showCard));
     if (mine.length) out.push({ key: "my-list", title: "Mi lista", shape: "poster", cards: mine });
-    const top = topRated(data.movies, ROW_MAX);
-    if (top.length) out.push({ key: "top-movies", title: "Películas mejor valoradas", shape: "poster", cards: top.map((m) => movieCard(m, progress)) });
-    const topShows = topRated(data.shows, ROW_MAX);
-    if (topShows.length) out.push({ key: "top-series", title: "Series mejor valoradas", shape: "poster", cards: topShows.map(showCard) });
+    if (lists.topMovies.length)
+      out.push({ key: "top-movies", title: "Películas mejor valoradas", shape: "poster", cards: lists.topMovies.map((m) => movieCard(m, progress)) });
+    if (lists.topShows.length) out.push({ key: "top-series", title: "Series mejor valoradas", shape: "poster", cards: lists.topShows.map(showCard) });
     return out;
-  }, [data, maps, cont, favLive, favMovies, favSeries, recentLive, progress]);
+  }, [data, maps, lists, cont, favLive, favMovies, favSeries, recentLive, progress]);
 
   useFocusWhenReady(!!data || failed);
 

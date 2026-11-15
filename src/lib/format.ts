@@ -23,14 +23,27 @@ export function epgTitle(e?: { title?: string }): string {
 
 const LOCALE = "es-CL";
 
+/*
+ * Formateadores creados una vez: `toLocaleString()` y compañía crean uno nuevo en cada llamada, y en
+ * el TV eso se nota cuando se formatean cientos de números al armar una pantalla.
+ */
+const NUMBER = new Intl.NumberFormat(LOCALE);
+const TIME = new Intl.DateTimeFormat(LOCALE, { hour: "2-digit", minute: "2-digit", hour12: false });
+const DATE = new Intl.DateTimeFormat(LOCALE, { day: "2-digit", month: "2-digit", year: "numeric" });
+
+/** Número con separador de miles (4.077). */
+export function formatCount(n: number): string {
+  return NUMBER.format(n);
+}
+
 export function hhmm(ts?: string | number): string {
   if (!ts) return "";
-  return new Date(Number(ts) * 1000).toLocaleTimeString(LOCALE, { hour: "2-digit", minute: "2-digit", hour12: false });
+  return TIME.format(new Date(Number(ts) * 1000));
 }
 
 export function formatDate(ts?: string | number | null): string {
   if (!ts) return "";
-  return new Date(Number(ts) * 1000).toLocaleDateString(LOCALE, { day: "2-digit", month: "2-digit", year: "numeric" });
+  return DATE.format(new Date(Number(ts) * 1000));
 }
 
 /** Días que faltan para el vencimiento (negativo si ya venció). */
