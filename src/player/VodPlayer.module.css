@@ -48,11 +48,20 @@
   text-align: center;
 }
 
-.errorBox strong {
+/*
+ * Los textos ocupan el ancho de la caja (stretch): centrados, Chromium 53 los deja en una sola línea
+ * más ancha que la caja. Con clase propia y no `.errorBox span`, que también tomaba el texto de los botones.
+ */
+.errorTitle,
+.errorHint {
+  align-self: stretch;
+}
+
+.errorTitle {
   font-size: 1.7rem;
 }
 
-.errorBox span {
+.errorHint {
   margin-top: 0.6rem;
   color: var(--muted);
 }

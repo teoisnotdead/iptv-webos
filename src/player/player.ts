@@ -47,6 +47,11 @@ const patch = (p: Partial<PlayerState>) => playerState.set((s) => ({ ...s, ...p 
 
 /** Si en este tiempo no empezó a reproducir, se pasa a la siguiente fuente. */
 const START_TIMEOUT_MS = 12_000;
+/**
+ * Películas y episodios: tope para recibir los metadatos. Antes de eso el navegador no avisa si llegan
+ * datos, y un MKV puede traer megas (p. ej. fuentes de subtítulos) antes del video.
+ */
+const VOD_METADATA_MAX_MS = 90_000;
 /** En vivo: si se queda cargando este tiempo, se recarga la fuente. */
 const STALL_TIMEOUT_MS = 15_000;
 const MAX_STALL_RELOADS = 3;
@@ -61,6 +66,9 @@ let startTimeoutMs = START_TIMEOUT_MS;
 let startAt = 0;
 let pendingStart = 0;
 let startTimer = 0;
+/** Llegaron datos (evento `progress`) desde que se armó el plazo de arranque. */
+let gotData = false;
+let startedAt = 0;
 let stallTimer = 0;
 let stallReloads = 0;
 let onSourceOk: ((s: Source) => void) | null = null;
@@ -246,6 +254,30 @@ async function load(s: Source, my: number) {
   if (p && typeof p.catch === "function") p.catch(() => undefined);
 }
 
+function bufferedEnd(): number {
+  const b = video ? video.buffered : null;
+  return b && b.length ? b.end(b.length - 1) : 0;
+}
+
+/**
+ * Plazo para que arranque la fuente. En vivo, al vencer se prueba la siguiente. En películas y
+ * episodios no hay otra que probar: con un servidor lento se sigue esperando mientras lleguen datos,
+ * o mientras siga pidiendo los metadatos (hasta `VOD_METADATA_MAX_MS`), y solo falla si se detuvo.
+ */
+function armStart(my: number, mark: number) {
+  gotData = false;
+  startTimer = window.setTimeout(() => {
+    if (my !== attempt) return;
+    if (!live && video) {
+      const now = bufferedEnd();
+      if (gotData || now > mark) return armStart(my, now);
+      const fetchingMeta = video.readyState === 0 && video.networkState === 2; // NETWORK_LOADING
+      if (fetchingMeta && Date.now() - startedAt < VOD_METADATA_MAX_MS) return armStart(my, now);
+    }
+    next(my);
+  }, startTimeoutMs);
+}
+
 function tryAt(i: number, my: number) {
   if (my !== attempt) return;
   clearTimers();
@@ -257,7 +289,8 @@ function tryAt(i: number, my: number) {
   current = i;
   stallReloads = 0;
   patch({ status: "loading", buffering: false, engine: sources[i].engine, error: null, tracks: [], texts: [] });
-  startTimer = window.setTimeout(() => next(my), startTimeoutMs);
+  startedAt = Date.now();
+  armStart(my, 0);
   load(sources[i], my);
 }
 
@@ -406,6 +439,9 @@ export function attachVideo(el: HTMLVideoElement): () => void {
   const onCanPlay = () => {
     if (playerState.get().buffering) patch({ buffering: false });
   };
+  const onProgress = () => {
+    gotData = true;
+  };
   const onError = () => {
     // Con `<source>`, el error llega a la fuente; aquí solo los de `video.src`.
     if (video && video.getAttribute("src")) next(my());
@@ -423,6 +459,7 @@ export function attachVideo(el: HTMLVideoElement): () => void {
   el.addEventListener("waiting", onWaiting);
   el.addEventListener("stalled", onStalled);
   el.addEventListener("canplay", onCanPlay);
+  el.addEventListener("progress", onProgress);
   el.addEventListener("error", onError);
   el.addEventListener("ended", onEnded);
   el.addEventListener("seeked", onSeeked);
@@ -446,6 +483,7 @@ export function attachVideo(el: HTMLVideoElement): () => void {
     el.removeEventListener("waiting", onWaiting);
     el.removeEventListener("stalled", onStalled);
     el.removeEventListener("canplay", onCanPlay);
+    el.removeEventListener("progress", onProgress);
     el.removeEventListener("error", onError);
     el.removeEventListener("ended", onEnded);
     el.removeEventListener("seeked", onSeeked);

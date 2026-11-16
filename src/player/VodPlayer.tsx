@@ -29,7 +29,10 @@ const SAVE_EVERY_S = 10;
 const UP_NEXT_S = 10;
 /** Las pulsaciones seguidas de ← → se juntan y se salta una sola vez al final. */
 const SEEK_COMMIT_MS = 700;
-/** Un panel lento puede tardar en empezar a mandar una película grande. */
+/**
+ * Un panel lento puede tardar en empezar a mandar una película grande. Mientras sigan llegando datos
+ * se sigue esperando (ver `armStart` en player.ts); falla si pasa este tiempo sin que llegue nada.
+ */
 const START_TIMEOUT_MS = 30_000;
 
 const metaOf = (r: PlayRequest): ProgressMeta => ({
@@ -291,8 +294,8 @@ export function VodPlayer({ req, okey }: { req: PlayRequest; okey: number }) {
         <div key="error" class={styles.center}>
           <div class={styles.errorBox}>
             <Icon name="alert" class={styles.errorIcon} />
-            <strong>{st.error}</strong>
-            <span>Puede que el servidor no responda o que el TV no soporte este formato.</span>
+            <strong class={styles.errorTitle}>{st.error}</strong>
+            <span class={styles.errorHint}>Puede que el servidor no responda o que el TV no soporte este formato.</span>
             <div class={styles.errorActions}>
               <Button variant="primary" icon="refresh" autofocus onClick={() => retry()}>
                 Reintentar
