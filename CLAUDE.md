@@ -76,7 +76,7 @@ Measure on the real TV, not on the PC: through `ares-inspect` + CDP, record rAF 
 - **Phase 2 done on the PC** (redesigned with the user, Netflix style like the web): Inicio (hero + Seguir viendo, Canales favoritos, Vistos recientemente, Películas/Series recientes, Mi lista, Mejor valoradas), Películas and Series (hero, Recientes, Mi lista, one row per category + "Ver todas" grid, Categorías picker), movie and series details (continue, from the start, my list, seasons and episodes), VOD player (seek, pause, audio/subtitle pickers when the TV exposes tracks, next episode). The smoke test passed 43/43 in dev and on the `file://` build; with search it has 52 steps (all OK in dev, 2026-11-16).
 - **Tested on the TV** (webOS 4.5, Developer Mode): login/CORS, real catalog, live TV, `audioTracks` (2 tracks in a dual MP4), and embedded subtitles through `com.webos.media` (2026-11-14, "RUST" MP4). Navigation smoothness was measured and improved (see "Performance on the TV").
 - **Next: test on the TV** (in this order):
-  1. Movies and episodes in **MKV**: AC-3/E-AC-3/DTS audio, audio track picker, embedded subtitles.
+  1. Movies and episodes in **MKV**: AC-3/E-AC-3/DTS audio and the audio track picker. Embedded subtitles in MKV are confirmed (2026-11-16, NieR episode 2: the TV sees 2 tracks without a language, shown as "Pista 1"/"Pista 2"). One of them showed raw `<font face=...>` tags: the TV's player doesn't interpret SRT markup and the app can't clean it, because the TV draws those subtitles.
   2. The **TS** engine in live (only HLS has been tried on the TV).
   3. **Automatic next episode** at the end of one (the countdown).
   4. **Exiting the app** ("¿Salir?" dialog, then back to the TV) and coming back.
