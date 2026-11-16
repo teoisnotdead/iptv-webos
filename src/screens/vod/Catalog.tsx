@@ -7,6 +7,7 @@ import { byId, groupByCategory, newest } from "../../lib/collections";
 import { cx } from "../../lib/cx";
 import { formatCount as fmt } from "../../lib/format";
 import { movieDetails, seriesDetails } from "../../lib/mappers";
+import { searchByName } from "../../lib/search";
 import { useAsync } from "../../lib/useAsync";
 import { useBack } from "../../nav/back";
 import { Browse, type BrowseRow } from "../../nav/Browse";
@@ -18,6 +19,7 @@ import { Button } from "../../ui/Button";
 import type { CardModel } from "../../ui/Card";
 import { Dialog } from "../../ui/Dialog";
 import { Hero } from "../../ui/Hero";
+import { SearchField } from "../../ui/SearchField";
 import { Message } from "../../ui/Status";
 import { movieCard, pickFeatured, showCard } from "../cards";
 import { openMovie, openShow, playVod } from "../router";
@@ -29,6 +31,7 @@ type Item = Movie | Show;
 const ROW_MAX = 30;
 const HERO_REM = 35;
 const NO_CAT = "";
+const GRID_DEBOUNCE_MS = 250;
 
 type CatItem = { id: string; name: string; count: number };
 type Data = { cats: CatItem[]; items: Item[]; byCat: Map<string, Item[]> };
@@ -43,8 +46,11 @@ export function Catalog({ kind }: { kind: VodKind }) {
   const [error, setError] = useState(false);
   const [reload, setReload] = useState(0);
   const [grid, setGrid] = useState<CatItem | null>(null);
+  const [gridText, setGridText] = useState("");
+  const [gridQuery, setGridQuery] = useState("");
   const [picker, setPicker] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
+  const gridField = useRef<HTMLInputElement>(null);
   const beforeGrid = useRef<HTMLElement | null>(null);
   const pickerFrom = useRef<HTMLElement | null>(null);
 
@@ -91,8 +97,16 @@ export function Catalog({ kind }: { kind: VodKind }) {
   /** `from`: dónde vuelve el foco al cerrar la grilla (por defecto, lo que tiene el foco ahora). */
   function openGrid(c: CatItem, from?: HTMLElement | null) {
     beforeGrid.current = from || (document.activeElement as HTMLElement | null);
+    setGridText("");
+    setGridQuery("");
     setGrid(c);
   }
+
+  // El filtro de la categoría se aplica cuando se deja de escribir un momento.
+  useEffect(() => {
+    const t = setTimeout(() => setGridQuery(gridText.trim()), GRID_DEBOUNCE_MS);
+    return () => clearTimeout(t);
+  }, [gridText]);
 
   function openPicker() {
     pickerFrom.current = document.activeElement as HTMLElement | null;
@@ -141,7 +155,11 @@ export function Catalog({ kind }: { kind: VodKind }) {
     return out;
   }, [data, fixed, favs, progress]);
 
-  const gridCards = useMemo(() => (grid && data ? (data.byCat.get(grid.id) || []).map(card) : []), [grid, data, progress]);
+  const gridCards = useMemo(() => {
+    if (!grid || !data) return [];
+    const list = data.byCat.get(grid.id) || [];
+    return (gridQuery ? searchByName(list, gridQuery).items : list).map(card);
+  }, [grid, data, progress, gridQuery]);
 
   useFocusWhenReady(!!data || error);
 
@@ -198,13 +216,33 @@ export function Catalog({ kind }: { kind: VodKind }) {
 
       {grid && (
         <div class={styles.gridPage} ref={gridRef}>
-          <h1 class={styles.gridTitle}>
-            {grid.name}
-            <span class={styles.gridCount}>
-              {fmt(grid.count)} {noun}
-            </span>
-          </h1>
-          <VirtualGrid key={grid.id} items={gridCards} shape="poster" zone={`${kind}-grid`} class={styles.grid} />
+          <div class={styles.gridHead}>
+            <h1 class={styles.gridTitle}>
+              {grid.name}
+              <span class={styles.gridCount}>
+                {gridQuery ? `${fmt(gridCards.length)} de ${fmt(grid.count)}` : fmt(grid.count)} {noun}
+              </span>
+            </h1>
+            <SearchField
+              small
+              value={gridText}
+              onInput={setGridText}
+              placeholder="Buscar en esta categoría"
+              inputRef={gridField}
+              class={styles.gridSearch}
+            />
+          </div>
+          {gridQuery && !gridCards.length && <p class={styles.gridEmpty}>No hay nada que se llame «{gridQuery}» en esta categoría.</p>}
+          <VirtualGrid
+            key={grid.id}
+            items={gridCards}
+            shape="poster"
+            zone={`${kind}-grid`}
+            class={styles.grid}
+            onUpFromTop={() => {
+              if (gridField.current) gridField.current.focus();
+            }}
+          />
         </div>
       )}
 

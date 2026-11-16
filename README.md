@@ -21,7 +21,8 @@ Pensada para **webOS 4.x (Chromium 53)** en adelante: el build se compila para e
   - Recuerda dónde quedaste.
 - **Varias cuentas** del panel en el mismo TV (pantalla Cuenta): cambiar de una a otra, ponerles nombre, agregar y cerrar sesión.
 - Favoritos, avance y canales recientes se guardan **solo en el TV**, por cuenta.
-- Pendiente: **Buscar** (el botón ya está en el menú).
+- **Buscar** canales, películas y series por nombre, sin importar tildes, mayúsculas ni signos ("spider man" encuentra "Spider-Man"). Primero va lo más parecido, y se recuerdan las últimas búsquedas.
+- **Buscador dentro de cada categoría** (en la grilla de "Ver todas" o Categorías), para las que tienen cientos de títulos.
 
 ## Requisitos
 
@@ -105,7 +106,7 @@ src/
   player/   el <video> único, reproductor de películas y episodios, pistas y subtítulos de webOS
   screens/  Inicio, En vivo, Películas/Series, fichas, Cuenta, login
   ui/       componentes (tarjetas, portada, marca, botones, diálogos…), cada uno con su CSS Module
-  lib/      utilidades: imágenes más chicas, armado de filas, formatos de fecha, estado compartido
+  lib/      utilidades: búsqueda, imágenes más chicas, armado de filas, formatos de fecha, estado compartido
 scripts/    appinfo.json e íconos, chequeo de compatibilidad, CLI del TV, login remoto, panel falso, prueba de humo
 ```
 

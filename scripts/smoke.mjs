@@ -160,6 +160,16 @@ await key("ArrowDown");
 await wait(400);
 const gridFocus = await focused();
 await check("moverse en la grilla", /Película de prueba/.test(gridFocus), gridFocus);
+await key("ArrowUp", 2);
+await wait(300);
+await check("arriba desde la primera fila sube al buscador de la categoría", /Buscar en esta categoría/.test(await focused()), await focused());
+await page.keyboard.type("1999");
+await wait(900);
+const filtered = await text();
+await check("el buscador filtra la categoría", /\d+ de 31[23] películas/.test(filtered) && /\(1999\)/.test(filtered), (filtered.match(/\d+ de \d+ películas/) || [""])[0]);
+await key("ArrowDown");
+await wait(400);
+await check("abajo vuelve a la grilla filtrada", /\(1999\)/.test(await focused()), await focused());
 await key("Escape");
 await wait(600);
 await check("Atrás cierra la grilla y vuelve a Categorías", /Categorías/.test(await focused()), await focused());
@@ -282,6 +292,39 @@ await key("Escape");
 await wait(600);
 await check("Atrás deja la lista de En vivo en ese canal", /Películas 12/.test(await focused()), await focused());
 await goSection(-1); // En vivo → Inicio
+await waitText(/Seguir viendo/);
+await wait(600);
+
+/* ---------- Buscar ---------- */
+
+await goSection(-1); // Inicio → Buscar
+await wait(400);
+await check("buscar con foco en el campo", /Canal, película o serie/.test(await focused()) && /Busca canales/.test(await text()), await focused());
+await page.keyboard.type("pelicula 12");
+await waitText(/\d+ resultados/);
+await wait(300);
+const found = await text();
+await check("busca sin tildes en canales y películas", /Canales/.test(found) && /Película de prueba 12/.test(found), (found.match(/\d+ resultados/) || [""])[0]);
+await key("ArrowDown");
+await wait(400);
+// Primero la fila con el resultado más parecido (la película 12 empieza con "Película … 12" palabra por palabra).
+await check("abajo entra a los resultados, el más parecido primero", /Película de prueba 12 \(/.test(await focused()), await focused());
+await key("ArrowDown");
+await wait(400);
+// Palabra entera antes que comienzo de palabra: el canal 12 antes que el 122 o el 212.
+await check("en canales, el 12 antes que el 122", /Películas 12\b/.test(await focused()), await focused());
+await key("Enter");
+await wait(4000);
+v = await video();
+await check("un canal encontrado abre En vivo a pantalla completa", playing(v) && /Películas 12\b/.test(await text()), JSON.stringify(v));
+await key("Escape"); // oculta la barra
+await wait(300);
+await key("Escape"); // vuelve a la lista
+await wait(600);
+await goSection(-2); // En vivo → Buscar
+await wait(400);
+await check("la búsqueda queda entre las recientes", /Búsquedas recientes/.test(await text()) && /pelicula 12/.test(await text()));
+await goSection(1); // Buscar → Inicio
 await waitText(/Seguir viendo/);
 await wait(600);
 

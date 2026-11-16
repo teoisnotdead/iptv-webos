@@ -1,6 +1,6 @@
 /**
- * Lo personal de cada cuenta, guardado solo en este TV: favoritos (canales, películas y series) y
- * los últimos canales vistos. Las listas van de lo más nuevo a lo más viejo.
+ * Lo personal de cada cuenta, guardado solo en este TV: favoritos (canales, películas y series),
+ * los últimos canales vistos y las últimas búsquedas. Las listas van de lo más nuevo a lo más viejo.
  */
 import { useMemo } from "preact/hooks";
 import { createStore, useStore } from "../lib/store";
@@ -67,4 +67,29 @@ export function useRecentChannels(): number[] {
   const v = useStore(libraryVersion);
   const s = useStore(session);
   return useMemo(recentChannelIds, [v, s]);
+}
+
+const MAX_SEARCHES = 10;
+
+function recentSearches(): string[] {
+  const k = keyOf("busquedas");
+  const v = k ? readJson<unknown>(k, []) : [];
+  return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
+}
+
+/** Guarda una búsqueda que sirvió (se eligió un resultado). La misma, con otras mayúsculas, no se repite. */
+export function pushRecentSearch(q: string): void {
+  const k = keyOf("busquedas");
+  const text = q.trim();
+  if (!k || !text) return;
+  const list = recentSearches().filter((x) => x.toLowerCase() !== text.toLowerCase());
+  list.unshift(text);
+  writeJson(k, list.slice(0, MAX_SEARCHES));
+  bump();
+}
+
+export function useRecentSearches(): string[] {
+  const v = useStore(libraryVersion);
+  const s = useStore(session);
+  return useMemo(recentSearches, [v, s]);
 }

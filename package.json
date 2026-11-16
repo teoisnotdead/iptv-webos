@@ -1,7 +1,7 @@
 {
   "name": "iptv-webos",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "App para Smart TV LG (webOS) de un servicio IPTV compatible con Xtream Codes",
   "type": "module",
   "scripts": {

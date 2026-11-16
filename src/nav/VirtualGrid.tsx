@@ -22,6 +22,8 @@ type Props = {
   shape: CardShape;
   zone: string;
   class?: string;
+  /** Arriba desde la primera fila (p. ej. para subir al buscador de la categoría). Sin esto, sigue la navegación global. */
+  onUpFromTop?: () => void;
 };
 
 export function VirtualGrid(p: Props) {
@@ -110,6 +112,9 @@ export function VirtualGrid(p: Props) {
       if (i - cols >= 0) {
         e.preventDefault();
         go(i - cols);
+      } else if (p.onUpFromTop) {
+        e.preventDefault();
+        p.onUpFromTop();
       }
     } else if (k === "down") {
       e.preventDefault();

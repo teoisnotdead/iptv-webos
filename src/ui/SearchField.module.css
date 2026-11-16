@@ -1,0 +1,51 @@
+.field {
+  position: relative;
+  display: block;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  height: 4.75rem;
+  padding: 0 1.75rem 0 4.75rem;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  background: var(--secondary);
+  font-size: 1.7rem;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.input::-webkit-input-placeholder {
+  color: var(--dim);
+}
+
+.input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 0.25rem var(--primary-a33);
+}
+
+.icon {
+  position: absolute;
+  left: 1.6rem;
+  top: 50%;
+  margin-top: -0.9rem;
+  font-size: 1.8rem;
+  color: var(--dim);
+  pointer-events: none;
+}
+
+.input:focus + .icon {
+  color: var(--primary);
+}
+
+.small .input {
+  height: 3.75rem;
+  padding-left: 4rem;
+  font-size: 1.35rem;
+}
+
+.small .icon {
+  left: 1.35rem;
+  margin-top: -0.75rem;
+  font-size: 1.5rem;
+}

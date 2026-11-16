@@ -15,7 +15,7 @@
 import type { ComponentChildren } from "preact";
 import { useEffect, useLayoutEffect, useRef, useState } from "preact/hooks";
 import { Card, CARD_HEIGHT, CARD_WIDTH, type CardModel, type CardShape } from "../ui/Card";
-import { navKey } from "./keys";
+import { isTextInput, navKey } from "./keys";
 import { activeLayer, enterZone } from "./spatial";
 import { useRem } from "./useRem";
 import styles from "./Browse.module.css";
@@ -159,6 +159,8 @@ export function Browse(p: Props) {
     if (!card || !v.contains(card)) {
       const h = head.current;
       if (!h || !h.contains(t)) return;
+      // En un campo de texto, izquierda y derecha mueven el cursor (lo resuelve la navegación global).
+      if (isTextInput(t) && (k === "left" || k === "right")) return;
       // En la cabecera: abajo entra a la primera fila. Derecha y arriba se mueven solo entre sus
       // botones (si no, el foco saltaría en diagonal a una tarjeta o a la barra lateral); izquierda
       // sigue a la navegación normal para llegar a la barra.

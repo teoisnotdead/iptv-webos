@@ -14,7 +14,7 @@ import { Home } from "./screens/home/Home";
 import { Live } from "./screens/live/Live";
 import { Login } from "./screens/Login";
 import { addingAccount, overlays, section, type Overlay } from "./screens/router";
-import { Soon } from "./screens/Soon";
+import { Search } from "./screens/search/Search";
 import { Catalog } from "./screens/vod/Catalog";
 import { MovieDetail } from "./screens/vod/MovieDetail";
 import { SeriesDetail } from "./screens/vod/SeriesDetail";
@@ -109,7 +109,7 @@ function Shell() {
         {sec === "live" && <Live />}
         {sec === "movies" && <Catalog key="movie" kind="movie" />}
         {sec === "series" && <Catalog key="series" kind="series" />}
-        {sec === "search" && <Soon icon="search" title="Buscar" />}
+        {sec === "search" && <Search />}
         {sec === "account" && <Account />}
       </main>
       {ovs.map((o, i) => (
